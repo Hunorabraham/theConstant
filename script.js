@@ -18,7 +18,7 @@ class GRASS{
         this.gr=ph[0].gr+Math.random()-0.5;
         GRASS.all.push(this);
     }
-    all=[];
+    static all=[];
     /*
     p;  // position             {x: int, y: int}
     s;  // size                 int
@@ -76,7 +76,7 @@ new GRASS({x:600,y:900}, 200, [{rn: 0, ig: 0, tl: 5, rl: 0, gr: 2}, {rn: 0, ig: 
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
-function toutch(any){
+function touch(any){
     console.log(`touched: ${(any instanceof GRASS)?"grass":"not grass"}`);
 }
 
