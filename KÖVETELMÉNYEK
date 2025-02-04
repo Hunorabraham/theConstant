@@ -1,0 +1,28 @@
+"climates"
+|>sliders for changing ?
+|>ground -> bottom => no roots
+grid
+|>maybe
+creatures
+|>eat grass
+ \>% nutrient steal
+ |>% size decrease
+ |>% death
+|>wander
+|>view
+plants
+|>grass
+ \>nutrient uptake
+ |>max size
+ |>lifespan
+ |>reproduction timer
+ |>phase counter
+  \>life lived
+  |>stop nutrient -> reproduce -> dies
+NAMIG
+|>class names -> SCREAM
+|>class methods -> who cares
+|>class fields -> camelCase
+SCTRUCTURE
+|>objects
+|>short names //but commented at declare
