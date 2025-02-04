@@ -5,17 +5,20 @@ const planc = deltaTime/1000;
 
 class GRASS{
     constructor(p,n,ph){
-        this.p={x: p.x+Math.random()-0.5, y: p.y};
+        this.p={x: p.x+(Math.random()-0.5)*10, y: p.y};
         this.s=0;
         this.l=0;
         this.n=n+Math.random()-0.5;
         this.ph=ph;
         this.phr=[];
+        this.fillphr();
+        this.rb=ph[0].rb; 
         this.rn=ph[0].rn+Math.random()-0.5;
         this.ig=ph[0].ig+Math.random()-0.5;
         this.tl=ph[0].tl+Math.random()-0.5;
         this.rl=ph[0].rl+Math.random()-0.5;
         this.gr=ph[0].gr+Math.random()-0.5;
+        this.d=false;
         GRASS.all.push(this);
     }
     static all=[];
@@ -41,17 +44,24 @@ class GRASS{
             this.n-=this.gr;    // deduct nutrients
             this.s+=this.gr;    // grow
         }
-        if(this.l%this.rl && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
+        if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
+            try{
             new GRASS(this.p,this.rn,this.phr);     // create new grass
+            }
+            catch{console.log(this.rb,this.ph, this.phr);}
             this.n-=this.rn;                        // remove the energy
         }
         if(this.tl<=this.l){    // if the phase's timelimit is over
             // advance phase
-            this.phr.push(this.ph.shift());
+            this.ph.shift();
             if(this.ph.length==0){    // if there are no more phases remaining
                 // die
+                this.d=true;
+                GRASS.all = GRASS.all.filter(x => !x.d);
+                return;
             }
+            this.rb=this.ph[0].rb;
             this.rn=this.ph[0].rn+Math.random()-0.5;
             this.ig=this.ph[0].ig+Math.random()-0.5;
             this.tl=this.ph[0].tl+Math.random()-0.5;
@@ -60,6 +70,11 @@ class GRASS{
         }
         this.l++; //increase elapsed time
         this.draw();
+
+    }
+    fillphr(){
+        for (let i = 0; i < this.ph.length; i++) this.phr.push({rn: this.ph[i].rn+Math.random()-0.5, ig: this.ph[i].ig+Math.random()-0.5, tl: this.ph[i].tl+Math.random()-0.5, rl: this.ph[i].rl+Math.random()-0.5, gr: this.ph[i].gr+Math.random()-0.5, rb: this.ph[i].rb})
+        if(this.phr.length==2)console.log(this);
     }
     draw(){
         ctx.strokeStyle=`hsl(${this.ig}, 100%, 50%)`
@@ -72,7 +87,7 @@ class GRASS{
     }
 }
 
-new GRASS({x:600,y:900}, 200, [{rn: 0, ig: 0, tl: 5, rl: 0, gr: 2}, {rn: 0, ig: 50, tl: 10, rl: 0, gr: 1},{rn: 100, ig: 50, tl: 20, rl: 2, gr: 0}]);
+new GRASS({x:600,y:900}, 200, [{rn: 0, ig: 0, tl: 5, rl: 0, gr: 2, rb: false}, {rn: 0, ig: 50, tl: 10, rl: 0, gr: 1, rb: false},{rn: 100, ig: 50, tl: 20, rl: 2, gr: 0, rb: true}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
