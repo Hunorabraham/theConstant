@@ -62,6 +62,9 @@ class GRASS{
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
+function toutch(any){
+    console.log(`touched: ${(any instanceof GRASS)?"grass":"not grass"}`);
+}
 
 class CREATURE_STATE{
     constructor(nut){
