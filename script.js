@@ -125,16 +125,22 @@ class CREATURE{
         this.st.n -= vec2Mag(this.v)*this.gs.size + this.gs.vis;
         switch(this.st.g){
             case "wander":
-                //make better, now runs forward -> BAD!
+                //make better, now runs forward on average -> BAD!
                 let ang = Math.atan2(this.v.y, this.v.x);
-                let newAng = (Math.random()-0.5)*2*10;
-                this.v = 
+                let newAng = ang + (Math.random()-0.5)*2*10; //here
+                this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.cos(newAng)*this.gs.spd}; //always going max speed right now
                 break;
             case "goto":
                 console.error("not implemented");
                 break;
             case "gofrom":
                 console.error("not implemented");
+                break;
+            case "reproduce":
+                console.error("not implemented");
+                break;
+            default:
+                console.error(`unexpected goal: ${this.st.g}`);
                 break;
         }
     }
