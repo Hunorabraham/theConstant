@@ -76,6 +76,9 @@ new GRASS({x:600,y:900}, 200, [{rn: 0, ig: 0, tl: 5, rl: 0, gr: 2}, {rn: 0, ig: 
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
+function toutch(any){
+    console.log(`touched: ${(any instanceof GRASS)?"grass":"not grass"}`);
+}
 
 class CREATURE_STATE{
     constructor(nut){
