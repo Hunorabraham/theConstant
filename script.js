@@ -49,7 +49,7 @@ class GRASS{
         if(this.tl<=this.l){    // if the phase's timelimit is over
             // advance phase
             this.phr.push(this.ph.shift());
-            if(this.ph.length()==0){    // if there are no more phases remaining
+            if(this.ph.length==0){    // if there are no more phases remaining
                 // die
             }
             this.rn=ph[0].rn+Math.random()-0.5;
