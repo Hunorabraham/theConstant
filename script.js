@@ -52,11 +52,11 @@ class GRASS{
             if(this.ph.length==0){    // if there are no more phases remaining
                 // die
             }
-            this.rn=ph[0].rn+Math.random()-0.5;
-            this.ig=ph[0].ig+Math.random()-0.5;
-            this.tl=ph[0].tl+Math.random()-0.5;
-            this.rl=ph[0].rl+Math.random()-0.5;
-            this.gr=ph[0].gr+Math.random()-0.5;
+            this.rn=this.ph[0].rn+Math.random()-0.5;
+            this.ig=this.ph[0].ig+Math.random()-0.5;
+            this.tl=this.ph[0].tl+Math.random()-0.5;
+            this.rl=this.ph[0].rl+Math.random()-0.5;
+            this.gr=this.ph[0].gr+Math.random()-0.5;
         }
         this.l++; //increase elapsed time
         this.draw();
