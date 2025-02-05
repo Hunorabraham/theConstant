@@ -92,8 +92,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 0, tl: 30, rl: 0, gr: 0.2, rb: false}, {rn: 0, ig: 1, tl: 60, rl: 0, gr: 0.1, rb: false},{rn: 1, ig: 5, tl: 240, rl: 0.5, gr: 0, rb: true}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 60, tl: 5, rl: 0, gr: 0.01, rb: false}, {rn: 0, ig: 60, tl: 10, rl: 0, gr: 0, rb: false},{rn: 20, ig: 60, tl: 40, rl: 3, gr: 0, rb: true}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 0, tl: 30, rl: 0, gr: 10, rb: false}, {rn: 0, ig: 1, tl: 60, rl: 0, gr: 5, rb: false},{rn: 1, ig: 5, tl: 240, rl: 0.5, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 60, tl: 5, rl: 0, gr: 1, rb: false}, {rn: 0, ig: 60, tl: 10, rl: 0, gr: 0, rb: false},{rn: 20, ig: 60, tl: 40, rl: 3, gr: 0, rb: true}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
