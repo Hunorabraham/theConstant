@@ -2,7 +2,7 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const deltaTime = 25;
 const planc = deltaTime/1000;
-let GN = 50000;
+let GN = 100000;
 
 class GRASS{
     constructor(p,n,ph){
@@ -51,7 +51,7 @@ class GRASS{
         if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
             try{
-            if(GRASS.all.length<1000){
+            if(GRASS.all.length<1500){
                 new GRASS(this.p,this.rn,this.phr);     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
@@ -92,7 +92,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:600,y:900}, 500, [{rn: 0, ig: 0, tl: 50, rl: 0, gr: 0.2, rb: false}, {rn: 0, ig: 1, tl: 100, rl: 0, gr: 0.1, rb: false},{rn: 20, ig: 2, tl: 400, rl: 1, gr: 0, rb: true}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 0, tl: 150, rl: 0, gr: 0.2, rb: false}, {rn: 0, ig: 1, tl: 300, rl: 0, gr: 0.1, rb: false},{rn: 1, ig: 5, tl: 1200, rl: 0.5, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 60, tl: 25, rl: 0, gr: 0.01, rb: false}, {rn: 0, ig: 60, tl: 50, rl: 0, gr: 0, rb: false},{rn: 20, ig: 60, tl: 200, rl: 3, gr: 0, rb: true}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
@@ -199,6 +200,9 @@ class CREATURE{
 new CREATURE({x:600,y:450},CREATURE_GENENOM.random(), 100);
 setInterval(() => {
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    GRASS.all.forEach(g=>{
+        g.update();
+    })
     CREATURE.all.forEach(c=>{
         c.update();
         c.render();
