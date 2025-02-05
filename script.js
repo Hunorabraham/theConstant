@@ -113,6 +113,11 @@ function write(text){
     //(...)
     //make this smarter later
 }
+function isInView(grass, creature){
+    if(Math.abs(grass.p.x-creature.p.x) > creature.gs.vis) return false;
+    if(creature.y+creature.gs.vis < canvas.height-grass.s) return false;
+    return true;
+}
 
 class CREATURE_STATE{
     constructor(nut){
@@ -169,18 +174,24 @@ class CREATURE{
         write(this.st.n);
         this.p.x += this.v.x*planc;
         this.p.y += this.v.y*planc;
+        let ang, newAng;
         switch(this.st.g){
             case "wander":
-                let ang = Math.atan2(this.v.y, this.v.x);
+                ang = Math.atan2(this.v.y, this.v.x);
                 if(Math.abs(ang - this.dg) < (this.gs.spd/180*Math.PI*planc)){
                     this.dg = (Math.random()-0.5)*Math.PI*2;
                 }
-                let newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
+                newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
                 this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.sin(newAng)*this.gs.spd}; //always going max speed right now
                 this.lookAround();
                 break;
             case "goto":
-                console.error("not implemented");
+                //console.error("not implemented");
+                this.dg = Math.atan2(this.st.t.p.s-this.p.y, this.st.t.p.x-this.p);
+                ang = Math.atan2(this.v.y, this.v.x);
+                newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
+                this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.sin(newAng)*this.gs.spd}; //always going max speed right now
+                
                 break;
             case "gofrom":
                 console.error("not implemented");
@@ -198,9 +209,10 @@ class CREATURE{
         CREATURE.all.splice(CREATURE.all.indexOf(this),1);
     }
     lookAround(grass, creature){
-        console.error("not implemented");
-        if(Math.abs(grass.p.x-creature.p.x) > creature.gs.vis) return false;
-        if(creature)
+        let seen = GRASS.all.filter(g=>isInView(g,this));
+        if(seen.length == 0) return;
+        this.st.g = "goto";
+        this.st.t = seen[Math.floor(Math.random()*seen.length)];
     }
 }
 new CREATURE({x:600,y:450},CREATURE_GENENOM.random(), 100);
