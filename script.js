@@ -2,23 +2,23 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const deltaTime = 25;
 const planc = deltaTime/1000;
-let GN = 1000;
+let GN = 50000;
 
 class GRASS{
     constructor(p,n,ph){
-        this.p={x: p.x+(Math.random()-0.5)*10, y: p.y};
+        this.p={x: Math.min(Math.max(0,p.x+(Math.random()-0.5)*50),1200), y: p.y};
         this.s=0;
         this.l=0;
-        this.n=n+Math.random()-0.5;
+        this.n=n;
         this.ph=ph;
         this.phr=[];
-        for (let i = 0; i < ph.length; i++) this.phr.push({rn: Math.max(0,ph[i].rn+Math.random()-0.5), ig: Math.max(0,ph[i].ig+Math.random()-0.5), tl: ph[i].tl+Math.random()-0.5, rl: Math.max(0,ph[i].rl+Math.random()-0.5), gr: Math.max(0,ph[i].gr+Math.random()-0.5), rb: ph[i].rb});
+        for (let i = 0; i < ph.length; i++) this.phr.push({rn: Math.max(0,ph[i].rn+(Math.random()-0.5)*10), ig: Math.max(0,ph[i].ig+(Math.random()-0.5)*2), tl: ph[i].tl+(Math.random()-0.5)*10, rl: Math.max(0,ph[i].rl+Math.random()-0.5), gr: Math.max(0,ph[i].gr+Math.random()-0.5), rb: ph[i].rb});
         this.rb=this.ph[0].rb;
-        this.rn=Math.max(0,this.ph[0].rn+Math.random()-0.5);
-        this.ig=Math.max(0,this.ph[0].ig+Math.random()-0.5);
-        this.tl=this.ph[0].tl+Math.random()-0.5;
-        this.rl=Math.max(0,this.ph[0].rl+Math.random()-0.5);
-        this.gr=Math.max(0,this.ph[0].gr+Math.random()-0.5);
+        this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
+        this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
+        this.tl=this.ph[0].tl+(Math.random()-0.5)*10;
+        this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5));
+        this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5));
         this.d=false;
         GRASS.all.push(this);
     }
@@ -50,12 +50,16 @@ class GRASS{
         }
         if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
-            let templength = GRASS.all.filter(x => x.p.x>this.p.x-10 && x.p.x<this.p.x+10).length
+            let templength = GRASS.all.filter(x => x.p.x>this.p.x-100 && x.p.x<this.p.x+100).length
             try{
-            if(templength<25)new GRASS(this.p,this.rn,this.phr);     // create new grass
+            if(templength<50){
+                new GRASS(this.p,this.rn,this.phr);     // create new grass
+                this.n-=this.rn;                        // remove the energy
             }
-            catch{console.log(this.rb,this.ph, this.phr);}
-            this.n-=this.rn;                        // remove the energy
+            }
+            catch{
+                //console.log(this.rb,this.ph, this.phr);
+            }
         }
         if(this.tl<=this.l){    // if the phase's timelimit is over
             // advance phase
@@ -68,15 +72,15 @@ class GRASS{
                 return;
             }
             this.rb=this.ph[0].rb;
-            this.rn=Math.max(0,this.ph[0].rn+Math.random()-0.5);
-            this.ig=Math.max(0,this.ph[0].ig+Math.random()-0.5);
-            this.tl=this.ph[0].tl+Math.random()-0.5;
-            this.rl=Math.max(0,this.ph[0].rl+Math.random()-0.5);
-            this.gr=Math.max(0,this.ph[0].gr+Math.random()-0.5);
+            this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
+            this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
+            this.tl=this.ph[0].tl+(Math.random()-0.5)*10;
+            this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5));
+            this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5));
         }
         this.l++; //increase elapsed time
         this.draw();
-
+        //console.log(GRASS.all.reduce((x,y) => x+y.n+y.s,0),GN);
     }
     draw(){
         ctx.strokeStyle=`hsl(${this.ig}, 100%, 50%)`
@@ -89,7 +93,7 @@ class GRASS{
     }
 }
 
-new GRASS({x:600,y:900}, 200, [{rn: 0, ig: 0, tl: 5, rl: 0, gr: 2, rb: false}, {rn: 0, ig: 50, tl: 10, rl: 0, gr: 1, rb: false},{rn: 100, ig: 50, tl: 20, rl: 2, gr: 0, rb: true}]);
+new GRASS({x:600,y:900}, 500, [{rn: 0, ig: 0, tl: 50, rl: 0, gr: 0.2, rb: false}, {rn: 0, ig: 1, tl: 100, rl: 0, gr: 0.1, rb: false},{rn: 20, ig: 2, tl: 400, rl: 1, gr: 0, rb: true}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
