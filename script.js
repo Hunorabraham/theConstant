@@ -41,12 +41,12 @@ class GRASS{
 
     update(){
         if(GN>this.ig){ // if enough nutrients exist in nature
-            GN-=this.ig // remove nutrients from nature
-            this.n+=this.ig; // intake nutrients
+            GN-=this.ig*planc; // remove nutrients from nature
+            this.n+=this.ig*planc; // intake nutrients
         }
         if(this.n>this.gr){     // if there is enough nutrients to grow
-            this.n-=this.gr;    // deduct nutrients
-            this.s+=this.gr;    // grow
+            this.n-=this.gr*planc;    // deduct nutrients
+            this.s+=this.gr*planc;    // grow
         }
         if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
@@ -77,7 +77,7 @@ class GRASS{
             this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5));
             this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5));
         }
-        this.l++; //increase elapsed time
+        this.l+=planc; //increase elapsed time
         this.draw();
         //console.log(GRASS.all.reduce((x,y) => x+y.n+y.s,0),GN);
     }
@@ -92,8 +92,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 0, tl: 150, rl: 0, gr: 0.2, rb: false}, {rn: 0, ig: 1, tl: 300, rl: 0, gr: 0.1, rb: false},{rn: 1, ig: 5, tl: 1200, rl: 0.5, gr: 0, rb: true}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 60, tl: 25, rl: 0, gr: 0.01, rb: false}, {rn: 0, ig: 60, tl: 50, rl: 0, gr: 0, rb: false},{rn: 20, ig: 60, tl: 200, rl: 3, gr: 0, rb: true}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 0, tl: 30, rl: 0, gr: 0.2, rb: false}, {rn: 0, ig: 1, tl: 60, rl: 0, gr: 0.1, rb: false},{rn: 1, ig: 5, tl: 240, rl: 0.5, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 60, tl: 5, rl: 0, gr: 0.01, rb: false}, {rn: 0, ig: 60, tl: 10, rl: 0, gr: 0, rb: false},{rn: 20, ig: 60, tl: 40, rl: 3, gr: 0, rb: true}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
