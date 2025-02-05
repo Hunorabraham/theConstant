@@ -2,6 +2,7 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const deltaTime = 16;
 const planc = deltaTime/1000;
+let GN = 1000;
 
 class GRASS{
     constructor(p,n,ph){
@@ -11,13 +12,13 @@ class GRASS{
         this.n=n+Math.random()-0.5;
         this.ph=ph;
         this.phr=[];
-        this.fillphr();
-        this.rb=ph[0].rb; 
-        this.rn=ph[0].rn+Math.random()-0.5;
-        this.ig=ph[0].ig+Math.random()-0.5;
-        this.tl=ph[0].tl+Math.random()-0.5;
-        this.rl=ph[0].rl+Math.random()-0.5;
-        this.gr=ph[0].gr+Math.random()-0.5;
+        for (let i = 0; i < ph.length; i++) this.phr.push({rn: Math.max(0,ph[i].rn+Math.random()-0.5), ig: Math.max(0,ph[i].ig+Math.random()-0.5), tl: ph[i].tl+Math.random()-0.5, rl: Math.max(0,ph[i].rl+Math.random()-0.5), gr: Math.max(0,ph[i].gr+Math.random()-0.5), rb: ph[i].rb});
+        this.rb=this.ph[0].rb;
+        this.rn=Math.max(0,this.ph[0].rn+Math.random()-0.5);
+        this.ig=Math.max(0,this.ph[0].ig+Math.random()-0.5);
+        this.tl=this.ph[0].tl+Math.random()-0.5;
+        this.rl=Math.max(0,this.ph[0].rl+Math.random()-0.5);
+        this.gr=Math.max(0,this.ph[0].gr+Math.random()-0.5);
         this.d=false;
         GRASS.all.push(this);
     }
@@ -39,15 +40,19 @@ class GRASS{
     */
 
     update(){
-        this.n+=this.ig; // intake nutrients
+        if(GN>this.ig){ // if enough nutrients exist in nature
+            GN-=this.ig // remove nutrients from nature
+            this.n+=this.ig; // intake nutrients
+        }
         if(this.n>this.gr){     // if there is enough nutrients to grow
             this.n-=this.gr;    // deduct nutrients
             this.s+=this.gr;    // grow
         }
         if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
+            let templength = GRASS.all.filter(x => x.p.x>this.p.x-10 && x.p.x<this.p.x+10).length
             try{
-            new GRASS(this.p,this.rn,this.phr);     // create new grass
+            if(templength<25)new GRASS(this.p,this.rn,this.phr);     // create new grass
             }
             catch{console.log(this.rb,this.ph, this.phr);}
             this.n-=this.rn;                        // remove the energy
@@ -59,22 +64,19 @@ class GRASS{
                 // die
                 this.d=true;
                 GRASS.all = GRASS.all.filter(x => !x.d);
+                GN+=this.n+this.s;
                 return;
             }
             this.rb=this.ph[0].rb;
-            this.rn=this.ph[0].rn+Math.random()-0.5;
-            this.ig=this.ph[0].ig+Math.random()-0.5;
+            this.rn=Math.max(0,this.ph[0].rn+Math.random()-0.5);
+            this.ig=Math.max(0,this.ph[0].ig+Math.random()-0.5);
             this.tl=this.ph[0].tl+Math.random()-0.5;
-            this.rl=this.ph[0].rl+Math.random()-0.5;
-            this.gr=this.ph[0].gr+Math.random()-0.5;
+            this.rl=Math.max(0,this.ph[0].rl+Math.random()-0.5);
+            this.gr=Math.max(0,this.ph[0].gr+Math.random()-0.5);
         }
         this.l++; //increase elapsed time
         this.draw();
 
-    }
-    fillphr(){
-        for (let i = 0; i < this.ph.length; i++) this.phr.push({rn: this.ph[i].rn+Math.random()-0.5, ig: this.ph[i].ig+Math.random()-0.5, tl: this.ph[i].tl+Math.random()-0.5, rl: this.ph[i].rl+Math.random()-0.5, gr: this.ph[i].gr+Math.random()-0.5, rb: this.ph[i].rb})
-        if(this.phr.length==2)console.log(this);
     }
     draw(){
         ctx.strokeStyle=`hsl(${this.ig}, 100%, 50%)`
