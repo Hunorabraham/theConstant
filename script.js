@@ -177,6 +177,7 @@ class CREATURE{
                 }
                 let newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
                 this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.sin(newAng)*this.gs.spd}; //always going max speed right now
+                this.lookAround();
                 break;
             case "goto":
                 console.error("not implemented");
@@ -195,6 +196,11 @@ class CREATURE{
     die(){
         if(!CREATURE.all.includes(this)) return;
         CREATURE.all.splice(CREATURE.all.indexOf(this),1);
+    }
+    lookAround(grass, creature){
+        console.error("not implemented");
+        if(Math.abs(grass.p.x-creature.p.x) > creature.gs.vis) return false;
+        if(creature)
     }
 }
 new CREATURE({x:600,y:450},CREATURE_GENENOM.random(), 100);
