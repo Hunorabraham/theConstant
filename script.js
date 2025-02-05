@@ -39,6 +39,11 @@ class GRASS{
     gr; // growth rate              int
     */
 
+    die(){
+        this.d=true;
+        GRASS.all = GRASS.all.filter(x => !x.d);
+        GN+=this.n+this.s;
+    }
     update(){
         if(GN>this.ig){ // if enough nutrients exist in nature
             GN-=this.ig*planc; // remove nutrients from nature
@@ -65,9 +70,7 @@ class GRASS{
             this.ph.shift();
             if(this.ph.length==0){    // if there are no more phases remaining
                 // die
-                this.d=true;
-                GRASS.all = GRASS.all.filter(x => !x.d);
-                GN+=this.n+this.s;
+                this.die();
                 return;
             }
             this.rb=this.ph[0].rb;
