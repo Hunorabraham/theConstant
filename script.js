@@ -6,7 +6,7 @@ let GN = 50000;
 
 class GRASS{
     constructor(p,n,ph){
-        this.p={x: Math.min(Math.max(0,p.x+(Math.random()-0.5)*50),1200), y: p.y};
+        this.p={x: Math.min(Math.max(0,p.x+((Math.random()-0.5)*100)),1200), y: p.y};
         this.s=0;
         this.l=0;
         this.n=n;
@@ -50,9 +50,8 @@ class GRASS{
         }
         if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
-            let templength = GRASS.all.filter(x => x.p.x>this.p.x-100 && x.p.x<this.p.x+100).length
             try{
-            if(templength<50){
+            if(GRASS.all.length<1000){
                 new GRASS(this.p,this.rn,this.phr);     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
