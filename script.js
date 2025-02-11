@@ -227,7 +227,7 @@ class CREATURE{
             let angVec = vec2FromAng(this.dg);
             this.dg = Math.atan2(-angVec.y, angVec.x);
         }
-        let spent = (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc;
+        let spent = (vec2Mag(this.v)*0.01 +this.gs.size*0.01 + this.gs.vis*0.01)*planc;
         this.st.n -= spent;
         GN += spent;
         if(this.st.n <= 0){this.die();}
