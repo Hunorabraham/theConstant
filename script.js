@@ -160,7 +160,7 @@ class CREATURE_GENOM{
         this.max = size*5;
         this.spd = spd; //speed  -> max speed
     }
-    static mutationRate = 10;
+    static mutationRate = 3;
     static random(){
         return new CREATURE_GENOM(
             Math.random()*100 + 40,
@@ -273,7 +273,7 @@ class CREATURE{
                 break;
             case "eat":
                 //console.error("not implemented");
-                if(this.st.t.n < this.gs.max*0.5){
+                if((this.st.t.n + this.st.t.s) < this.gs.max*0.5){
                     this.st.n += this.st.t.n;
                     this.st.t.s = 0; 
                     this.st.t.n = 0;
