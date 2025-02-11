@@ -107,6 +107,12 @@ function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
 function touch(any){console.log(`touched: ${(any instanceof GRASS)?"grass":"not grass"}`);}
 function handedness(v,w){return Math.sign(v.x*w.y - w.x*v.y);}
 function vec2FromAng(angle){return {x: Math.cos(angle), y: Math.sin(angle)};}
+function dot(v,w){return v.x*w.x + v.y*w.y;}
+function normalise(v){
+    let mag = vec2Mag(v);
+    if(mag == 0) return{x:0,y:0};
+    return {x: v.x/mag, y: v.y/mag};
+}
 function renderVec2(v, origin, scale){
     ctx.beginPath();
     ctx.moveTo(origin.x, origin.y);
@@ -176,13 +182,12 @@ class CREATURE{
         //renderVec2(vec2FromAng(this.dg), this.p, 100);
         //renderVec2(this.v, this.p, 1);
     }
-    update(){
-        this.st.n -= (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc;
+    update(){        
+        this.st.n -= (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc*0.1;
         if(this.st.n <= 0){this.die();}
         this.p.x += this.v.x*planc;
         this.p.y += this.v.y*planc;
-        write(this.st.g);
-        let ang, newAng;
+        let ang, newAng, speedChange;
         switch(this.st.g){
             case "wander":
                 ang = Math.atan2(this.v.y, this.v.x);
@@ -190,21 +195,44 @@ class CREATURE{
                     this.dg = (Math.random()-0.5)*Math.PI*2;
                 }
                 newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
-                this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.sin(newAng)*this.gs.spd}; //always going max speed right now
-                this.lookAround();
+                speedChange = (1+dot(vec2FromAng(this.dg), normalise(this.v)))*0.5;
+                this.v = {x: Math.cos(newAng)*this.gs.spd*speedChange, y: Math.sin(newAng)*this.gs.spd*speedChange};
+                if(this.st.n < this.gs.size*0.5){ this.lookAround();}
                 break;
             case "goto":
                 //console.error("not implemented");
-                this.dg = Math.atan2(this.st.t.s-this.p.y, this.st.t.p.x-this.p.x);
+                let dirvec = {x: this.st.t.p.x-this.p.x, y: canvas.height-this.st.t.s-this.p.y};
+                if(vec2Mag(dirvec) < this.gs.size){
+                    this.st.g = "eat";
+                    this.v = {x:0,y:0};
+                    break;
+                }
+                this.dg = Math.atan2(dirvec.y, dirvec.x);
+                ctx.fillStyle = "black";
                 ang = Math.atan2(this.v.y, this.v.x);
                 newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
-                this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.sin(newAng)*this.gs.spd}; //always going max speed right now
+                speedChange = (1+dot(vec2FromAng(this.dg), normalise(this.v)))*0.5;
+                this.v = {x: Math.cos(newAng)*this.gs.spd*speedChange, y: Math.sin(newAng)*this.gs.spd*speedChange};
                 break;
             case "gofrom":
                 console.error("not implemented");
                 break;
             case "reproduce":
                 console.error("not implemented");
+                break;
+            case "eat":
+                //console.error("not implemented");
+                if(this.st.t.n < this.gs.size*0.5){
+                    this.st.n += this.st.t.n;
+                    this.st.t.s = 0; 
+                    this.st.t.n = 0;
+                }
+                else{
+                    this.st.t.n -= this.gs.size*0.25;
+                    this.st.t.s -= this.gs.size*0.25;
+                    this.st.n += this.gs.size*0.5;
+                }
+                this.st.g = "wander";
                 break;
             default:
                 console.error(`unexpected goal: ${this.st.g}`);
@@ -222,7 +250,7 @@ class CREATURE{
         this.st.t = seen[Math.floor(Math.random()*seen.length)];
     }
 }
-new CREATURE({x:600,y:450},CREATURE_GENENOM.random(), 100);
+new CREATURE({x:600,y:450},CREATURE_GENENOM.random(), 50);
 setInterval(() => {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     GRASS.all.forEach(g=>{
