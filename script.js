@@ -153,16 +153,17 @@ class CREATURE_STATE{
         this.g = "wander"; //walking mode/goal
     }
 }
-class CREATURE_GENENOM{
+class CREATURE_GENOM{
     constructor(vis, col, size, spd){
         this.vis = vis; //vision -> how far it can see
         this.col = col; //colour -> just visual for now
         this.size = size; //size -> max nutrients stored
+        this.max = size*5;
         this.spd = spd; //speed  -> max speed
     }
     static mutationRate = 1;
     static random(){
-        return new CREATURE_GENENOM(
+        return new CREATURE_GENOM(
             Math.random()*100 + 40,
             Math.random()*360,
             Math.random()*20+10,
@@ -170,8 +171,8 @@ class CREATURE_GENENOM{
         );
     };
     mutate(){
-        let cg = new CREATURE_GENENOM();
-        Object.keys(this).forEach(key=>cg[key]=this[key] + (Math.random()-0.5)*2*mutationRate);
+        let cg = new CREATURE_GENOM();
+        Object.keys(this).forEach(key=>cg[key]=this[key] + (Math.random()-0.5)*2*CREATURE_GENOM.mutationRate);
         return cg;
     }
 }
@@ -180,8 +181,8 @@ class CREATURE{
         this.p = pos; //position
         this.v = {x:1, y:1}; //velocity
         this.gs = genes; //genes
-        this.st = new CREATURE_STATE(genes.size*nutriens/100); //state of the creature
-        this.dg = 0; //desired angle
+        this.st = new CREATURE_STATE(nutriens); //state of the creature
+        this.dg = Math.PI; //desired angle
         CREATURE.all.push(this);
     }
     static all = [];
@@ -224,7 +225,9 @@ class CREATURE{
             let angVec = vec2FromAng(this.dg);
             this.dg = Math.atan2(-angVec.y, angVec.x);
         }
-        this.st.n -= (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc*0.1;
+        let spent = (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc*0.5;
+        this.st.n -= spent;
+        GN += spent;
         if(this.st.n <= 0){this.die();}
         this.p.x += this.v.x*planc;
         this.p.y += this.v.y*planc;
@@ -238,7 +241,7 @@ class CREATURE{
                 newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
                 speedChange = (1+dot(vec2FromAng(this.dg), normalise(this.v)))*0.5;
                 this.v = {x: Math.cos(newAng)*this.gs.spd*speedChange, y: Math.sin(newAng)*this.gs.spd*speedChange};
-                if(this.st.n < this.gs.size*0.5){ this.lookAround();}
+                if(this.st.n < this.gs.max*0.5){ this.lookAround();}
                 break;
             case "goto":
                 //console.error("not implemented");
@@ -259,19 +262,30 @@ class CREATURE{
                 console.error("not implemented");
                 break;
             case "reproduce":
-                console.error("not implemented");
+                //console.error("not implemented");
+                //create two new creatures
+                new CREATURE({x:this.p.x-this.gs.size, y:this.p.y}, this.gs.mutate(), this.st.n/2);
+                new CREATURE({x:this.p.x+this.gs.size, y:this.p.y}, this.gs.mutate(), this.st.n/2);
+                //kill the original creature
+                this.die();
                 break;
             case "eat":
                 //console.error("not implemented");
-                if(this.st.t.n < this.gs.size*0.5){
+                if(this.st.t.n < this.gs.max*0.5){
                     this.st.n += this.st.t.n;
                     this.st.t.s = 0; 
                     this.st.t.n = 0;
                 }
                 else{
-                    this.st.t.n -= this.gs.size*0.25;
-                    this.st.t.s -= this.gs.size*0.25;
-                    this.st.n += this.gs.size*0.5;
+                    this.st.t.n -= this.gs.max*0.25;
+                    this.st.t.s -= this.gs.max*0.25;
+                    this.st.n += this.gs.max*0.5;
+                }
+                if(this.st.n > this.gs.max*0.75){
+                    if(Math.random() < 0.5){
+                        this.st.g="reproduce";
+                        break;
+                    }
                 }
                 this.st.g = "wander";
                 break;
@@ -291,7 +305,7 @@ class CREATURE{
         this.st.t = seen[Math.floor(Math.random()*seen.length)];
     }
 }
-new CREATURE({x:600,y:450},CREATURE_GENENOM.random(), 50);
+new CREATURE({x:600,y:450},CREATURE_GENOM.random(), 30);
 setInterval(() => {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     GRASS.all.forEach(g=>{
