@@ -11,8 +11,7 @@ class GRASS{
         this.l=0;
         this.n=n;
         this.ph=ph;
-        this.phr=[];
-        for (let i = 0; i < ph.length; i++) this.phr.push({rn: Math.max(0,ph[i].rn+(Math.random()-0.5)*10), ig: Math.max(0,ph[i].ig+(Math.random()-0.5)*2), tl: ph[i].tl+(Math.random()-0.5), rl: Math.max(0,ph[i].rl+(Math.random()-0.5)/10), gr: Math.max(0,ph[i].gr+(Math.random()-0.5)/10), rb: ph[i].rb});
+        this.phr=ph.filter(x => true);
         this.rb=this.ph[0].rb;
         this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
         this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
@@ -66,11 +65,11 @@ class GRASS{
         if(this.rb && this.l%this.rl<1 && this.n>this.rn+this.s){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
             try{
-            if(GRASS.all.length<1500){
+            if(GRASS.all.length<2000){
                 new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
-            else if (Math.random()<1500/GRASS.all.length){
+            else if (Math.random()<2000/(GRASS.all.length**2)){
                 new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
@@ -111,8 +110,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 15, rl: 0, gr: 10, rb: false},{rn: 500, ig: 100, tl: 240, rl: 4, gr: 0, rb: true}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 4, tl: 1, rl: 0, gr: 10, rb: false}, {rn: 80, ig: 45, tl: 8, rl: 1, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 300, rl: 0, gr: 0, rb: false}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 15, rl: 0, gr: 10, rb: false},{rn: 500, ig: 100, tl: 240, rl: 1, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 4, tl: 1, rl: 0, gr: 10, rb: false}, {rn: 80, ig: 25, tl: 4, rl: 2, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 30, rl: 0, gr: 0, rb: false}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
