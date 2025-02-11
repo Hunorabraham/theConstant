@@ -2,7 +2,7 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const deltaTime = 25;
 const planc = deltaTime/1000;
-let GN = 100000;
+let GN = 1000000;
 
 class GRASS{
     constructor(p,n,ph){
@@ -39,29 +39,39 @@ class GRASS{
     gr; // growth rate              int
     */
 
-    die(){
+    die(reason,related){
         this.d=true;
         GRASS.all = GRASS.all.filter(x => !x.d);
         GN+=this.n+this.s;
+        //console.log(reason,related);
     }
     update(){
         if(this.n>this.s){  // Energy regulation
             this.n-=this.s*planc;
+            GN+=this.s*planc;
         }
-        else this.die();
-        if(GN>this.ig*this.s){ // if enough nutrients exist in nature in accordance to size
+        else this.die('lack of energy',{energy:this.n,size:this.s});
+        if(GN>this.ig*this.s && this.n<this.s*10){ // if enough nutrients exist in nature in accordance to size
             GN-=this.ig*this.s*planc; // remove nutrients from nature in accordance to size
             this.n+=this.ig*this.s*planc; // intake nutrients in accordance to size
+        }
+        else if(this.n<this.s*10){
+            this.n+=GN;
+            GN=0;
         }
         if(this.n>this.gr){     // if there is enough nutrients to grow
             this.n-=this.gr*planc;    // deduct nutrients
             this.s+=this.gr*planc;    // grow
         }
-        if(this.rb && this.l%this.rl<1 && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
+        if(this.rb && this.l%this.rl<1 && this.n>this.rn+this.s){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
             try{
             if(GRASS.all.length<1500){
-                new GRASS(this.p,this.rn,this.phr);     // create new grass
+                new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
+                this.n-=this.rn;                        // remove the energy
+            }
+            else if (Math.random()<1500/GRASS.all.length){
+                new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
             }
@@ -71,10 +81,12 @@ class GRASS{
         }
         if(this.tl<=this.l){    // if the phase's timelimit is over
             // advance phase
+            //console.log(this.ph)
             this.ph.shift();
+            //console.log(this.ph);
             if(this.ph.length==0){    // if there are no more phases remaining
                 // die
-                this.die();
+                this.die('end of life cycle',{own:this.ph,reproductive:this.phr});
                 return;
             }
             this.rb=this.ph[0].rb;
@@ -99,8 +111,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 2, tl: 30, rl: 0, gr: 5, rb: false},{rn: 500, ig: 150, tl: 240, rl: 4, gr: 0, rb: true}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 20, tl: 5, rl: 0, gr: 10, rb: false}, {rn: 80, ig: 85, tl: 10, rl: 1, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 300, rl: 0, gr: 0, rb: false}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 15, rl: 0, gr: 10, rb: false},{rn: 500, ig: 100, tl: 240, rl: 4, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 4, tl: 1, rl: 0, gr: 10, rb: false}, {rn: 80, ig: 45, tl: 8, rl: 1, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 300, rl: 0, gr: 0, rb: false}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
