@@ -12,13 +12,13 @@ class GRASS{
         this.n=n;
         this.ph=ph;
         this.phr=[];
-        for (let i = 0; i < ph.length; i++) this.phr.push({rn: Math.max(0,ph[i].rn+(Math.random()-0.5)*10), ig: Math.max(0,ph[i].ig+(Math.random()-0.5)*2), tl: ph[i].tl+(Math.random()-0.5)*10, rl: Math.max(0,ph[i].rl+Math.random()-0.5), gr: Math.max(0,ph[i].gr+Math.random()-0.5), rb: ph[i].rb});
+        for (let i = 0; i < ph.length; i++) this.phr.push({rn: Math.max(0,ph[i].rn+(Math.random()-0.5)*10), ig: Math.max(0,ph[i].ig+(Math.random()-0.5)*2), tl: ph[i].tl+(Math.random()-0.5), rl: Math.max(0,ph[i].rl+(Math.random()-0.5)/10), gr: Math.max(0,ph[i].gr+(Math.random()-0.5)/10), rb: ph[i].rb});
         this.rb=this.ph[0].rb;
         this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
         this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
-        this.tl=this.ph[0].tl+(Math.random()-0.5)*10;
-        this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5));
-        this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5));
+        this.tl=this.ph[0].tl+(Math.random()-0.5);
+        this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5)/10);
+        this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5)/10);
         this.d=false;
         GRASS.all.push(this);
     }
@@ -45,9 +45,13 @@ class GRASS{
         GN+=this.n+this.s;
     }
     update(){
-        if(GN>this.ig){ // if enough nutrients exist in nature
-            GN-=this.ig*planc; // remove nutrients from nature
-            this.n+=this.ig*planc; // intake nutrients
+        if(this.n>this.s){  // Energy regulation
+            this.n-=this.s*planc;
+        }
+        else this.die();
+        if(GN>this.ig*this.s){ // if enough nutrients exist in nature in accordance to size
+            GN-=this.ig*this.s*planc; // remove nutrients from nature in accordance to size
+            this.n+=this.ig*this.s*planc; // intake nutrients in accordance to size
         }
         if(this.n>this.gr){     // if there is enough nutrients to grow
             this.n-=this.gr*planc;    // deduct nutrients
@@ -76,9 +80,9 @@ class GRASS{
             this.rb=this.ph[0].rb;
             this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
             this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
-            this.tl=this.ph[0].tl+(Math.random()-0.5)*10;
-            this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5));
-            this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5));
+            this.tl=this.ph[0].tl+(Math.random()-0.5);
+            this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5)/10);
+            this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5)/10);
         }
         this.l+=planc; //increase elapsed time
         this.draw();
@@ -95,8 +99,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 0, tl: 30, rl: 0, gr: 10, rb: false}, {rn: 0, ig: 1, tl: 60, rl: 0, gr: 5, rb: false},{rn: 1, ig: 5, tl: 240, rl: 0.5, gr: 0, rb: true}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 60, tl: 5, rl: 0, gr: 1, rb: false}, {rn: 0, ig: 60, tl: 10, rl: 0, gr: 0, rb: false},{rn: 20, ig: 60, tl: 40, rl: 3, gr: 0, rb: true}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 2, tl: 30, rl: 0, gr: 5, rb: false},{rn: 500, ig: 150, tl: 240, rl: 4, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 20, tl: 5, rl: 0, gr: 10, rb: false}, {rn: 80, ig: 85, tl: 10, rl: 1, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 300, rl: 0, gr: 0, rb: false}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
@@ -121,6 +125,7 @@ function isInView(grass, creature){
     if(creature.y+creature.gs.vis < canvas.height-grass.s) return false;
     return true;
 }
+
 
 class CREATURE_STATE{
     constructor(nut){
@@ -155,7 +160,7 @@ class CREATURE_GENENOM{
 class CREATURE{
     constructor(pos, genes, nutriens){
         this.p = pos; //position
-        this.v = {x:0, y:0}; //velocity
+        this.v = {x:1, y:1}; //velocity
         this.gs = genes; //genes
         this.st = new CREATURE_STATE(genes.size*nutriens/100); //state of the creature
         this.dg = 0; //desired angle
