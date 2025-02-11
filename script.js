@@ -16,7 +16,6 @@ class GRASS{
         this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
         this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
         this.tl=this.ph[0].tl+(Math.random()-0.5);
-        this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5)/10);
         this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5)/10);
         this.d=false;
         GRASS.all.push(this);
@@ -33,8 +32,6 @@ class GRASS{
     rn; // reproduction nutrient    int
     ig; // intakegrade              int
     tl; // time limit               int
-    rl; // reproduction limit       int
-    rt; // reproduction timer       int
     gr; // growth rate              int
     */
 
@@ -62,21 +59,24 @@ class GRASS{
             this.n-=this.gr*planc;    // deduct nutrients
             this.s+=this.gr*planc;    // grow
         }
-        if(this.rb && this.l%this.rl<0.01 && this.n>this.rn+this.s){       // if it is time to reproduce and there is enough nutrients to do so
+        if(this.rb && this.n>this.rn){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
             try{
             if(GRASS.all.length<2000){
                 new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
-                this.n-=this.rn;                        // remove the energy
+                this.n-=this.rn;                                          // remove the energy
             }
-            else if (Math.random()<2000/(GRASS.all.length**2/2)){
+            else if (Math.random()<0.05){
                 new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
-                this.n-=this.rn;                        // remove the energy
+                this.n-=this.rn;                                          // remove the energy
+                new GRASS(this.p,this.rn,this.phr.filter(x => true));
+                this.n-=this.rn;
             }
             }
             catch{
                 //console.log(this.rb,this.ph, this.phr);
             }
+            this.rb=false;
         }
         if(this.tl<=this.l){    // if the phase's timelimit is over
             // advance phase
@@ -92,7 +92,6 @@ class GRASS{
             this.rn=Math.max(0,this.ph[0].rn+(Math.random()-0.5)*10);
             this.ig=Math.max(0,this.ph[0].ig+(Math.random()-0.5)*2);
             this.tl=this.ph[0].tl+(Math.random()-0.5);
-            this.rl=Math.max(0,this.ph[0].rl+(Math.random()-0.5)/10);
             this.gr=Math.max(0,this.ph[0].gr+(Math.random()-0.5)/10);
         }
         this.l+=planc; //increase elapsed time
@@ -100,7 +99,7 @@ class GRASS{
         //console.log(GRASS.all.reduce((x,y) => x+y.n+y.s,0),GN);
     }
     draw(){
-        ctx.strokeStyle=`hsl(${this.ig}, 100%, 50%)`
+        ctx.strokeStyle=`hsl(${this.ig*50}, 100%, 50%)`
         ctx.beginPath();
         ctx.moveTo(this.p.x,this.p.y);
         ctx.lineTo(this.p.x,this.p.y-this.s);
@@ -110,8 +109,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 4, rl: 0, gr: 40, rb: false},{rn: 400, ig: 20, tl: 10, rl: 2, gr: 0, rb: true},{rn: 0, ig: 300, tl: 10.5, rl: 0, gr: 0, rb: false},{rn: 0, ig: 0, tl: 200, rl: 0, gr: 0, rb: false}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 1, tl: 1, rl: 0, gr: 10, rb: false}, {rn: 20, ig: 10, tl: 4, rl: planc*5, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 30, rl: 0, gr: 0, rb: false}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 4, gr: 40, rb: false}, {rn: 500, ig: 400, tl: 4, gr: 0, rb: true}, {rn: 0, ig: 3, tl: 40, gr: 0, rb: false}, {rn: 500, ig: 400, tl: 40, gr: 0, rb: true}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 2, tl: 1, gr: 40, rb: false}, {rn: 500, ig: 200, tl: 1, gr: 0, rb: true},{rn: 200, ig: 400, tl: 1, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 30, gr: 0, rb: false}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
