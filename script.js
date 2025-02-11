@@ -193,7 +193,36 @@ class CREATURE{
         //renderVec2(vec2FromAng(this.dg), this.p, 100);
         //renderVec2(this.v, this.p, 1);
     }
-    update(){        
+    update(){
+        if(this.p.x-this.gs.size < 0){
+            //left
+            this.v.x *= -1;
+            this.p.x = this.gs.size;
+            let angVec = vec2FromAng(this.dg);
+            this.dg = Math.atan2(angVec.y, -angVec.x);
+        }
+        else if(this.p.x + this.gs.size > canvas.width){
+            //right
+            this.v.x *= -1;
+            this.p.x = canvas.width-this.gs.size;
+            let angVec = vec2FromAng(this.dg);
+            this.dg = Math.atan2(angVec.y, -angVec.x);
+
+        }
+        else if(this.p.y-this.gs.size < 0){
+            //top
+            this.v.y *= -1;
+            this.p.y = this.gs.size;
+            let angVec = vec2FromAng(this.dg);
+            this.dg = Math.atan2(-angVec.y, angVec.x);
+        }
+        else if(this.p.y + this.gs.size > canvas.height){
+            //bottom
+            this.v.y *= -1;
+            this.p.y = canvas.height-this.gs.size;
+            let angVec = vec2FromAng(this.dg);
+            this.dg = Math.atan2(-angVec.y, angVec.x);
+        }
         this.st.n -= (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc*0.1;
         if(this.st.n <= 0){this.die();}
         this.p.x += this.v.x*planc;
