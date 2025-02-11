@@ -159,7 +159,7 @@ class CREATURE_GENOM{
         this.max = size*5;
         this.spd = spd; //speed  -> max speed
     }
-    static mutationRate = 1;
+    static mutationRate = 3;
     static random(){
         return new CREATURE_GENOM(
             Math.random()*100 + 40,
@@ -185,11 +185,14 @@ class CREATURE{
     }
     static all = [];
     render(){
-        ctx.beginPath();
-        ctx.fillStyle = `hsl(${this.gs.col}, ${this.st.n/this.gs.size*100}%, 50%)`;
-        ctx.arc(this.p.x, this.p.y, this.gs.size, 0, Math.PI*2, false);
-        ctx.closePath();
-        ctx.fill();
+        try{
+            ctx.beginPath();
+            ctx.fillStyle = `hsl(${this.gs.col}, ${this.st.n/this.gs.max*100}%, 50%)`;
+            ctx.arc(this.p.x, this.p.y, this.gs.size, 0, Math.PI*2, false);
+            ctx.closePath();
+            ctx.fill();
+        }
+        catch{ this.die();}
         //renderVec2(vec2FromAng(this.dg), this.p, 100);
         //renderVec2(this.v, this.p, 1);
     }
@@ -223,7 +226,7 @@ class CREATURE{
             let angVec = vec2FromAng(this.dg);
             this.dg = Math.atan2(-angVec.y, angVec.x);
         }
-        let spent = (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc*0.5;
+        let spent = (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc;
         this.st.n -= spent;
         GN += spent;
         if(this.st.n <= 0){this.die();}
@@ -269,10 +272,11 @@ class CREATURE{
                 break;
             case "eat":
                 //console.error("not implemented");
-                if(this.st.t.n < this.gs.max*0.5){
+                if((this.st.t.n + this.st.t.s) < this.gs.max*0.5){
                     this.st.n += this.st.t.n;
                     this.st.t.s = 0; 
                     this.st.t.n = 0;
+                    this.st.t.die("eaten",{});
                 }
                 else{
                     this.st.t.n -= this.gs.max*0.25;
@@ -280,7 +284,7 @@ class CREATURE{
                     this.st.n += this.gs.max*0.5;
                 }
                 if(this.st.n > this.gs.max*0.75){
-                    if(Math.random() < 0.5){
+                    if(true){//encouraging reproduction
                         this.st.g="reproduce";
                         break;
                     }
