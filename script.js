@@ -186,11 +186,14 @@ class CREATURE{
     }
     static all = [];
     render(){
-        ctx.beginPath();
-        ctx.fillStyle = `hsl(${this.gs.col}, ${this.st.n/this.gs.max*100}%, 50%)`;
-        ctx.arc(this.p.x, this.p.y, this.gs.size, 0, Math.PI*2, false);
-        ctx.closePath();
-        ctx.fill();
+        try{
+            ctx.beginPath();
+            ctx.fillStyle = `hsl(${this.gs.col}, ${this.st.n/this.gs.max*100}%, 50%)`;
+            ctx.arc(this.p.x, this.p.y, this.gs.size, 0, Math.PI*2, false);
+            ctx.closePath();
+            ctx.fill();
+        }
+        catch{ this.die();}
         //renderVec2(vec2FromAng(this.dg), this.p, 100);
         //renderVec2(this.v, this.p, 1);
     }
