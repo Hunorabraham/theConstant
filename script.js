@@ -174,9 +174,9 @@ class CREATURE{
     update(){
         this.st.n -= (vec2Mag(this.v)*this.gs.size*0.001 + this.gs.vis*0.001)*planc;
         if(this.st.n <= 0){this.die();}
-        write(this.st.n);
         this.p.x += this.v.x*planc;
         this.p.y += this.v.y*planc;
+        write(this.st.g);
         let ang, newAng;
         switch(this.st.g){
             case "wander":
@@ -190,11 +190,10 @@ class CREATURE{
                 break;
             case "goto":
                 //console.error("not implemented");
-                this.dg = Math.atan2(this.st.t.p.s-this.p.y, this.st.t.p.x-this.p);
+                this.dg = Math.atan2(this.st.t.s-this.p.y, this.st.t.p.x-this.p.x);
                 ang = Math.atan2(this.v.y, this.v.x);
                 newAng = ang + handedness(this.v, vec2FromAng(this.dg))*this.gs.spd/180*Math.PI*planc;
                 this.v = {x: Math.cos(newAng)*this.gs.spd, y: Math.sin(newAng)*this.gs.spd}; //always going max speed right now
-                
                 break;
             case "gofrom":
                 console.error("not implemented");
