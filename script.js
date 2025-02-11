@@ -62,14 +62,14 @@ class GRASS{
             this.n-=this.gr*planc;    // deduct nutrients
             this.s+=this.gr*planc;    // grow
         }
-        if(this.rb && this.l%this.rl<1 && this.n>this.rn+this.s){       // if it is time to reproduce and there is enough nutrients to do so
+        if(this.rb && this.l%this.rl<0.01 && this.n>this.rn+this.s){       // if it is time to reproduce and there is enough nutrients to do so
             // reproduce
             try{
             if(GRASS.all.length<2000){
                 new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
-            else if (Math.random()<2000/(GRASS.all.length**2)){
+            else if (Math.random()<2000/(GRASS.all.length**2/2)){
                 new GRASS(this.p,this.rn,this.phr.filter(x => true));     // create new grass
                 this.n-=this.rn;                        // remove the energy
             }
@@ -110,8 +110,8 @@ class GRASS{
     }
 }
 
-new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 15, rl: 0, gr: 10, rb: false},{rn: 500, ig: 100, tl: 240, rl: 1, gr: 0, rb: true}]);
-new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 4, tl: 1, rl: 0, gr: 10, rb: false}, {rn: 80, ig: 25, tl: 4, rl: 2, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 30, rl: 0, gr: 0, rb: false}]);
+new GRASS({x:400,y:900}, 500, [{rn: 0, ig: 6, tl: 4, rl: 0, gr: 40, rb: false},{rn: 400, ig: 20, tl: 10, rl: 2, gr: 0, rb: true},{rn: 0, ig: 300, tl: 10.5, rl: 0, gr: 0, rb: false},{rn: 0, ig: 0, tl: 200, rl: 0, gr: 0, rb: false}]);
+new GRASS({x:800,y:900}, 500, [{rn: 0, ig: 1, tl: 1, rl: 0, gr: 10, rb: false}, {rn: 20, ig: 10, tl: 4, rl: planc*5, gr: 0, rb: true}, {rn: 0, ig: 0, tl: 30, rl: 0, gr: 0, rb: false}]);
 
 //return the magnitude of a 2d vector
 function vec2Mag(v){return Math.sqrt(v.x**2 + v.y**2)};
